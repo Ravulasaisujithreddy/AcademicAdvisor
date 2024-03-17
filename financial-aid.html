@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://static.vecteezy.com/system/resources/previews/000/639/484/large_2x/vector-abstract-sun-yellow-color-in-radiance-rays-pattern-with-comic-black-line-background-decoration-for-poster-texting-banner-art-work-banner-show-text.jpg');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            padding-top: 50px;
+            background-color: #f8f9fa;
+            padding-top: 70px;
+        }
+        .col-form-label {
+            width: fit-content;
+            text-align: right;
+        }
+        .form-control {
+            max-width: 300px;
+        }
+        .form-group {
+            padding-bottom: 15px;
+            margin-left: 300px;
+        }
+        .offset-sm-2 button {
+            margin-bottom: 15px;
+            margin-left: 100px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .back-button {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Financial Aid Registration</h1>
+        <form id="registrationForm">
+            <div class="form-group row">
+                <label for="firstName" class="col-sm-2 col-form-label">First Name :</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="firstName" placeholder="Enter your first name" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="lastName" class="col-sm-2 col-form-label">Last Name :</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="lastName" placeholder="Enter your last name" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="email" class="col-sm-2 col-form-label">Email :</label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="mobileNumber" class="col-sm-2 col-form-label">Mobile :</label>
+                <div class="col-sm-10">
+                    <input type="tel" class="form-control" id="mobileNumber" placeholder="Enter your phone number" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="major" class="col-sm-2 col-form-label">Major :</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="major" placeholder="Enter your major" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="college" class="col-sm-2 col-form-label">School Name :</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="college" placeholder="Enter your school name" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            <div class="form-group row back-button">
+                <div class="col-sm-10 offset-sm-2">
+                    <a href="main.html" class="btn btn-secondary">Back</a>
+                </div>
+            </div>
+        </form>
+        <div id="successMessage" style="display: none;">Form submitted successfully!</div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Function to read query parameters
+        function getQueryParams() {
+            const queryParams = {};
+            window.location.search.substring(1).split('&').forEach(param => {
+                const [key, value] = param.split('=');
+                queryParams[key] = value;
+            });
+            return queryParams;
+        }
+    
+        // Function to update user status to "Applied"
+        function updateUserStatus(userId) {
+            let userStatus = JSON.parse(localStorage.getItem('userStatus')) || [];
+            const index = userStatus.findIndex(user => user.userId === parseInt(userId));
+            if (index !== -1) {
+                userStatus[index].status = "Applied";
+                localStorage.setItem('userStatus', JSON.stringify(userStatus));
+            }
+        }
+    
+        // Function to clear the form
+        function clearForm() {
+            document.getElementById('registrationForm').reset();
+        }
+    
+        // Submit event listener for the registration form
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            // Read query parameters to get userId
+            const queryParams = getQueryParams();
+            const userId = queryParams.userId;
+    
+            // Update user status to "Applied" if userId exists
+            if (userId) {
+                updateUserStatus(userId);
+            }
+    
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+    
+            // Clear the form
+            clearForm();
+        });
+    
+        // Back button event listener
+        document.querySelector('.back-button a').addEventListener('click', function(event) {
+            event.preventDefault();
+    
+            // Navigate back to the previous URL
+            history.back();
+        });
+    </script>
+    
+    
+</body>
+</html>

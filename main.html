@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Advisor</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://www.powerfulprep.com/wp-content/uploads/2022/04/pencil-background-e1663274451293-1024x684.jpg');
+            background-attachment: fixed;
+            background-size: cover;
+            /* Center the background image */
+            background-position: center;
+            padding-top: 50px; /* Adjust top padding as needed */
+            background-color: #f8f9fa;
+            /* Add padding to top */
+            padding-top: 70px;
+        }
+        .container {
+            text-align: center;
+        }
+        h1, h2 {
+            color: #007bff;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        /* Custom CSS for dropdown */
+        .custom-dropdown {
+            width: 50%;
+            margin-left: 300px;
+        }
+        .custom-dropdown-menu {
+            width: 50%;
+            
+        }
+        /* Custom CSS for input fields */
+        .input-group {
+            margin-bottom: 10px;
+        }
+        .input-group input {
+            width: calc(20% - 10px); /* Adjust input width */
+            margin-right: 30px;
+        }
+        .input-group .btn {
+            width: calc(25% - 5px); /* Adjust button width */
+            display: grid;
+            column-gap:20px;
+            grid-template-columns:40% 40% ;
+        }
+        .inputFields{
+            display: grid;
+            column-gap:2px;
+            grid-template-columns:30% 30% 30%;
+            
+        }
+        .select{
+            margin-top: 100px;
+        }
+        .aid {
+            margin-top: 150px;
+        }
+        #financialAidBtn{
+            align-content: center;
+            margin-left: 450px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Academic Advisor</h1>
+        <div class="select">
+            <P style="font-weight: bold;">Select Major: </p>
+            <select id="majorDropdown" class="custom-dropdown form-control">
+                <option value="select">Choose from courses</option>
+                <option value="computerScience">Computer Science</option>
+                <option value="DataScience">data Science</option>
+                <option value="engineering">Computer Engineering</option>
+                <option value="biology">BioTechnology</option>
+                <!-- Add more options as needed -->
+            </select>
+        </div>
+
+        <div id="inputFields" style="display: none;">
+            <h2>Enter Course Information</h2>
+            <div class="inputFields">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Current Grade</span>
+                </div>
+                <input type="number" class="form-control" id="currentGrade" min="0" max="4" step="0.1" placeholder="0-4">
+            </div>
+            
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Desired Grade</span>
+                </div>
+                <input type="number" class="form-control" id="desiredGrade" min="2" max="4" step="0.5" placeholder="0-4">
+            </div>
+            
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Number of Courses Enrolled</span>
+                </div>
+                <input type="number" class="form-control" id="numCourses" min="1" max="4" placeholder="1-4">
+            </div>
+            </div>
+            <div class="input-group-btn">
+                <button id="calculateBtn-current" class="btn btn-primary">Schedule For Current</button>
+                <button id="calculateBtn-upcoming" class="btn btn-primary">Schedule For Upcomming</button>
+            </div>
+        </div>
+
+        <div class="aid">
+            <h2> Financial Aid</h2>
+            <p> Federal Student Aid provides student financial assistance in the form of grants, loans, and work-study funds. </p>
+            <p id="financialAidContent" class="text-secondary">Select a major to see financial aid options.</p>
+            <button id="financialAidBtn" style="display: none;">Apply for Financial Aid</button>
+        </div>
+    </div>
+    <a href="index.html">
+        <button id="backButton" class="btn btn-secondary">Back</button>
+    </a>
+    <!-- Bootstrap JS (optional, for certain Bootstrap components) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Your custom JavaScript -->
+    <script>
+        const majorDropdown = document.getElementById('majorDropdown');
+        const financialAidContent = document.getElementById('financialAidContent');
+        const inputFields = document.getElementById('inputFields');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const currentGradeInput = document.getElementById('currentGrade');
+        const desiredGradeInput = document.getElementById('desiredGrade');
+        const numCoursesInput = document.getElementById('numCourses');
+        const financialAidBtn = document.getElementById('financialAidBtn');
+        const calculateCurrentBtn = document.getElementById('calculateBtn-current');
+        const calculateUpcomingBtn = document.getElementById('calculateBtn-upcoming');
+
+        [currentGradeInput, desiredGradeInput, numCoursesInput].forEach(input => {
+    input.addEventListener('input', function() {
+        // Check if all input fields have values
+        const allInputsFilled = currentGradeInput.value && desiredGradeInput.value && numCoursesInput.value;
+        const twoInputsFilled = desiredGradeInput.value && numCoursesInput.value;
+        const isZero = parseInt(currentGradeInput.value);
+        console.log(isZero);
+        // Enable or disable the buttons based on the condition
+        if (allInputsFilled && isZero!=0) {
+            calculateCurrentBtn.removeAttribute('disabled');
+            calculateUpcomingBtn.removeAttribute('disabled');
+        } else if(twoInputsFilled && isZero==0){
+            calculateCurrentBtn.setAttribute('disabled', 'disabled');
+            calculateUpcomingBtn.removeAttribute('disabled');
+        }
+        else {
+            calculateCurrentBtn.setAttribute('disabled', 'disabled');
+            calculateUpcomingBtn.setAttribute('disabled', 'disabled');
+        }
+    });
+});
+    
+        majorDropdown.addEventListener('change', function() {
+            const selectedMajor = this.value;
+            calculateCurrentBtn.setAttribute('disabled', 'disabled');
+            calculateUpcomingBtn.setAttribute('disabled', 'disabled');
+            // Update financial aid content based on selected major
+            financialAidContent.textContent = getFinancialAidContent(selectedMajor);
+            // Hide or show input fields based on the selected major
+            if (selectedMajor !== 'select') {
+                inputFields.style.display = 'block'; // Show input fields
+            } else {
+                inputFields.style.display = 'none'; // Hide input fields
+            }
+            if (this.value !== 'select') {
+                financialAidBtn.style.display = 'block';
+            } else {
+                financialAidBtn.style.display = 'none';
+            }
+        });
+    
+        financialAidBtn.addEventListener('click', function() {
+            const selectedMajor = majorDropdown.value;
+            if (selectedMajor !== 'select') {
+                const courseName = selectedMajor.charAt(0).toUpperCase() + selectedMajor.slice(1);
+                window.location.href = `financial-aid.html?course=${courseName}&userId=${getUrlParameter('userId')}`;
+            }
+        });
+    
+        calculateCurrentBtn.addEventListener('click', function() {
+            // Get input values
+            const currentGrade = parseFloat(currentGradeInput.value);
+            const desiredGrade = parseFloat(desiredGradeInput.value);
+            const numCourses = parseInt(numCoursesInput.value);
+            const major=majorDropdown.value;
+            console.log(major,majorDropdown.value);
+            // Calculate study hours
+            const studyHours = calculateStudyHours(currentGrade, desiredGrade, numCourses,major);
+            const current = "Current";
+            // Redirect to study-plan.html with study hours as query parameter
+            window.location.href = `study-plan.html?studyHours=${studyHours}&current=${current}&userId=${getUrlParameter('userId')}`;
+        });
+        calculateUpcomingBtn.addEventListener('click', function() {
+            // Get input values
+            const currentGrade = parseFloat(currentGradeInput.value);
+            const desiredGrade = parseFloat(desiredGradeInput.value);
+            const numCourses = parseInt(numCoursesInput.value);
+            const major=majorDropdown.value;
+            console.log(major,majorDropdown.value);
+            // Calculate study hours
+            const studyHours = calculateStudyHours(currentGrade, desiredGrade, numCourses,major);
+            const current = "Upcoming";
+            // Redirect to study-plan.html with study hours as query parameter
+            window.location.href = `study-plan.html?studyHours=${studyHours}&current=${current}&userId=${getUrlParameter('userId')}`;
+        });
+    
+        function calculateStudyHours(currentGrade, desiredGrade, numCourses,major) {
+            // You can adjust the multiplier based on personal study habits and other factors
+         let multiplier;
+            switch(major) {
+        case 'computerScience':
+            multiplier = 2; // Example multiplier for Computer Science
+            break;
+        case 'DataScience':
+            multiplier = 2; // Example multiplier for Engineering
+            break;
+        case 'engineering':
+            multiplier = 1; // Example multiplier for Biology
+            break;
+            case 'biology':
+            multiplier = 1; // Example multiplier for Biology
+            break;
+        default:
+            multiplier = 1; // Default multiplier
+            break;
+    } // Example multiplier
+            return ((2*(desiredGrade) - currentGrade) / numCourses) * multiplier;
+        }
+    
+        function getFinancialAidContent(major) {
+            // You can replace these placeholder texts with actual financial aid information
+            switch(major) {
+                case 'computerScience':
+                    return "Financial aid options for Computer Science";
+                case 'engineering':
+                    return "Financial aid options for Engineering";
+                case 'biology':
+                    return "Financial aid options for Biology";
+                default:
+                    return "Select a major to see financial aid options.";
+            }
+        }
+        
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+    </script>
+    
+    
+</body>
+</html>

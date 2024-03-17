@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Selection</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://cdn.wallpapersafari.com/50/26/CQfINk.jpg');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            padding-top: 50px; /* Adjust top padding as needed */
+            background-color: #f8f9fa;
+            padding-top: 70px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        .btn-container {
+            margin-top: 100px;
+            text-align: center;
+        }
+        .btn-group {
+            display: grid; /* Changed to grid */
+            width: 100%;
+            grid-template-columns: 40% 20% 40%; /* Three equal-width columns */
+            grid-column-gap: 10px; /* Adjust gap as needed */
+            justify-content: center; /* Center align */
+            
+        }
+        .btn {
+            margin-bottom: 10px;
+            width: 100%; /* Make buttons occupy full width of column */
+        }
+        .btn-container p {
+            grid-column: 1 / -1; /* Span across all columns */
+            text-align: center; /* Center align */
+        }
+        #student-form{
+            width: 35%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Are you A</h1>
+        <div class="btn-container">
+            <p>Choose your role:</p> <!-- Added paragraph -->
+            <div class="btn-group">
+                <a href="#" onclick="selectRole('student')" class="btn btn-primary btn-lg">Student</a>
+                <h1>or</h1>
+                <a href="advisor.html" class="btn btn-primary btn-lg">Academic Advisor</a>
+            </div>
+        </div>
+        <div id="student-form" style="display: none;">
+            <form id="student-info">
+                <div class="form-group">
+                    <label for="first-name">First Name</label>
+                    <input type="text" class="form-control" id="first-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" class="form-control" id="last-name" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        
+        function selectRole(role) {
+            if (role === 'student') {
+                document.getElementById('student-form').style.display = 'block';
+            }
+        }
+
+        document.getElementById('student-info').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            // Retrieve existing user data from localStorage or initialize as an empty array
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            let userStatus = JSON.parse(localStorage.getItem('userStatus')) || []; // Retrieve userStatus array
+            // Generate the userId
+            const userId = users.length + 1;
+            const userData = {
+                userId: userId,
+                firstName: firstName,
+                lastName: lastName
+            };
+            // Add new user data to the array
+            users.push(userData);
+
+            // Store the userId and the string "NotApplied" in an object
+            const userDataStatus = {
+                userId: userId,
+                status: "NotApplied"
+            };
+            // Add the userDataStatus to the userStatus array
+            userStatus.push(userDataStatus);
+
+            // Store the updated arrays back in localStorage
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('userStatus', JSON.stringify(userStatus));
+            
+            // Forward the created user ID as a query parameter to main.html
+            window.location.href = `main.html?userId=${userId}`;
+        });
+    </script>
+</body>
+</html>

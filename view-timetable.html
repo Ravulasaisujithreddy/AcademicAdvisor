@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Timetable</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 50px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .user-info {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .user-info h2 {
+            margin-bottom: 20px;
+        }
+        .table-container {
+            margin-top: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .table-container table {
+            width: 100%;
+        }
+        .logout-button {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-info">
+            <h2>Student Information</h2>
+            <div class="row">
+                <div class="col-sm-3"><strong>First Name:</strong></div>
+                <div class="col-sm-9"><span id="firstName"></span></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3"><strong>Last Name:</strong></div>
+                <div class="col-sm-9"><span id="lastName"></span></div>
+            </div>
+            
+        </div>
+        <div class="table-container">
+            <table id="viewTimetable" class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Time</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                        <th>Sunday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Timetable content will be generated dynamically -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Logout button -->
+        <div class="logout-button">
+            <button id="logoutButton" class="btn btn-primary">Logout</button>
+        </div>
+
+        
+        
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    // Retrieve users array from local storage
+    const users = JSON.parse(localStorage.getItem('users'));
+    // Retrieve timetables array from local storage
+    const timetables = JSON.parse(localStorage.getItem('timetables'));
+    
+    // Get the last user object from the users array
+    const lastUser = users[users.length - 1];
+    // Get the last timetable object from the timetables array
+    const lastTimetable = timetables[timetables.length - 1];
+
+    // Display user information
+    document.getElementById('firstName').textContent = lastUser.firstName;
+    document.getElementById('lastName').textContent = lastUser.lastName;
+    
+    // Reference to table body
+    const tbody = document.querySelector('#viewTimetable tbody');
+
+    // Array for days and time slots
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const timeslots = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'];
+
+    // Loop through each time slot
+    timeslots.forEach((timeslot, index) => {
+        // Check if the timetable has a schedule array and it has the current index
+        if (lastTimetable.schedule && lastTimetable.schedule[index]) {
+            const hasActivity = lastTimetable.schedule[index].some(activity => activity !== '-');
+
+            if (hasActivity) {
+                const tr = document.createElement('tr');
+                const th = document.createElement('th');
+                th.textContent = timeslot;
+                tr.appendChild(th);
+
+                // Loop through each day and create table cells
+                days.forEach(day => {
+                    const td = document.createElement('td');
+                    const scheduleOfDay = lastTimetable.schedule[index];
+                    const value = scheduleOfDay[days.indexOf(day)];
+                    td.textContent = value ? value : '-';
+                    tr.appendChild(td);
+                });
+
+                // Append row to table body
+                tbody.appendChild(tr);
+            }
+        }
+    });
+    // Logout button event listener
+    document.getElementById('logoutButton').addEventListener('click', function() {
+                // Redirect to index.html using JavaScript
+                window.location.href = 'index.html';
+            });
+});
+
+    </script>
+</body>
+</html>

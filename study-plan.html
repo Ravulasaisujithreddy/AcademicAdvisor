@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Schedule</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+       body {
+           
+            background-size: cover;
+            /* Center the background image */
+            background-position: center;
+            padding-top: 50px; /* Adjust top padding as needed */
+            background-color: #f8f9fa;
+            /* Add padding to top */
+            padding-top: 70px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        .schedule-wrapper{
+            margin-bottom: 50px;
+
+        }
+        .schedule-heading {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        #studyHoursDisplay {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-save-plan {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none; /* Initially hide the button */
+        }
+        .table-container {
+           
+            max-height: 400px; /* Adjust height as needed */
+            overflow-y: auto;
+            background-color: #aea4a4;
+        }
+        .grid-container {
+            display: grid;
+            column-gap: 70px;
+            grid-template-columns:80% 20%;
+        }
+        .grid-container1 {
+            display: grid;
+            column-gap:2px;
+            grid-template-columns:34% 66%;
+            text-align:left;
+        }
+        .blue-option {
+    background-color: blue;
+    color: white;
+}
+
+.green-option {
+    background-color: green;
+    color: white;
+}
+
+.red-option {
+    background-color: red;
+    color: white;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="schedule-wrapper">
+            <h1 class="schedule-heading">Weekly Schedule</h1>
+            <div id="studyHoursDisplay">
+                
+                <div class="grid-container1 ">
+                <p>Based on desired results the suggested study hours are :</p>
+                <p id="studyHours">0 hours</p>
+                </div>
+            </div>
+            <div class="grid-container">
+            <div class="table-container">
+                
+    
+                    <table id="scheduleTable" class="table table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th></th> <!-- Placeholder for empty cell in top-left corner -->
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>
+                                <th>Sunday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table content will be generated dynamically -->
+                        </tbody>
+                    </table>
+                
+            </div>
+            <div id="totals">
+                <h3 class="schedule-heading">Overall Hours Per Week</h3>
+                <div id="classTotal"></div>
+                <div id="studyTotal"></div>
+                <div id="workTotal"></div>
+            </div>
+             </div>
+        </div>
+        
+        <!-- Save Plan button -->
+        <button id="savePlanButton" class="btn btn-primary btn-save-plan">Save Plan</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Get study hours from URL query parameter (replace with actual value)
+            const urlParams = new URLSearchParams(window.location.search);
+            const studyHours = parseInt(urlParams.get('studyHours'));
+            
+            // Get userId from URL query parameter
+            const userId = urlParams.get('userId');
+    
+            // Get the value of the "current" parameter
+            const currentParam = urlParams.get('current');
+    
+            // Concatenate the value with the heading if it exists
+            let headingText = "Weekly Schedule";
+            if (currentParam) {
+                headingText = `${currentParam} Weekly Schedule`;
+            }
+    
+            // Update the heading text
+            const headingElement = document.querySelector('.schedule-heading');
+            headingElement.textContent = headingText;
+    
+            // Display study hours
+            $('#studyHours').text(`${studyHours} hours`);
+    
+            // Array for days and time slots
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const timeslots = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'];
+    
+            // Reference to table body
+            const tbody = $('#scheduleTable tbody');
+    
+            // Variables to store totals
+            let classTotal = 0;
+            let studyTotal = 0;
+            let workTotal = 0;
+    
+            // Previous selections
+            let prevSelections = {};
+    
+            // Loop through each time slot
+            timeslots.forEach(timeslot => {
+                const tr = $('<tr>');
+                tr.append(`<th class="vertical">${timeslot}</th>`);
+    
+                // Loop through each day and create dropdown cell
+                days.forEach(day => {
+                    const select = $('<select>').addClass('form-control');
+                    const defaultOption = $('<option>').val('').text('Select');
+                    select.append(defaultOption);
+                    ['Class', 'Study', 'Work'].forEach(option => {
+                        const optionElement = $('<option>').val(option.toLowerCase()).text(option);
+                        select.append(optionElement);
+                    });
+                    const td = $('<td>').append(select);
+                    tr.append(td);
+                });
+    
+                // Append row to table body
+                tbody.append(tr);
+            });
+    
+            // Update totals when dropdown value changes
+            $('#scheduleTable').on('change', 'select', function() {
+                const selectedOption = $(this).val();
+                const rowIndex = $(this).closest('tr').index();
+                const columnIndex = $(this).closest('td').index();
+                const key = `${rowIndex}-${columnIndex}`;
+    
+                // Check if the selection is different from the previous selection
+                if (prevSelections[key] !== selectedOption) {
+                    // Subtract from the previous selection if it exists
+                    if (prevSelections[key]) {
+                        switch (prevSelections[key]) {
+                            case 'class':
+                                classTotal--;
+                                break;
+                            case 'study':
+                                studyTotal--;
+                                break;
+                            case 'work':
+                                workTotal--;
+                                break;
+                        }
+                    }
+    
+                    // Add to the current selection
+                    switch (selectedOption) {
+                        case 'class':
+                            classTotal++;
+                            break;
+                        case 'study':
+                            studyTotal++;
+                            break;
+                        case 'work':
+                            workTotal++;
+                            break;
+                    }
+    
+                    // Update totals display
+                    $('#classTotal').text(`Total Class Hours: ${classTotal} hours`);
+                    $('#studyTotal').text(`Total Study Hours: ${studyTotal} hours`);
+                    $('#workTotal').text(`Total Work Hours: ${workTotal} hours`);
+    
+                    // Update previous selection
+                    prevSelections[key] = selectedOption;
+                }
+            });
+    
+            // Change dropdown color on selection
+            $('#scheduleTable').on('change', 'select', function() {
+                const selectedOption = $(this).val();
+                if (selectedOption === 'class') {
+    $(this).removeClass('green-option red-option').addClass('blue-option');
+} else if (selectedOption === 'study') {
+    $(this).removeClass('blue-option red-option').addClass('green-option');
+} else if (selectedOption === 'work') {
+    $(this).removeClass('blue-option green-option').addClass('red-option');
+}
+            }).on('click', 'select', function() {
+                // Trigger change event manually to update color instantly
+                $(this).change();
+            });
+    
+            // Show Save Plan button only if study hours are greater than 0
+            if (studyHours > 0) {
+                $('.btn-save-plan').show();
+            }
+    
+            // Save Plan button click event
+            $('#savePlanButton').click(function() {
+                // Check if study hours are greater than 0
+                if (studyHours > 0) {
+                    // Check if study hours are greater than or equal to required hours
+                    if (studyTotal >= studyHours) {
+                        // Save the plan to local storage
+                        const timetableData = {
+                            userId: userId, // Add userId to the timetable data
+                            classTotal,
+                            studyTotal,
+                            workTotal,
+                            schedule: []
+                        };
+    
+                        $('#scheduleTable tbody tr').each(function (rowIndex) {
+                            let hasSelection = false;
+                            const daySchedule = [];
+                            $(this).find('select').each(function () {
+                                const selectedOption = $(this).val();
+                                if (selectedOption) {
+                                    hasSelection = true;
+                                }
+                                daySchedule.push(selectedOption);
+                            });
+                            if (hasSelection) {
+                                timetableData.schedule.push(daySchedule);
+                            }
+                        });
+    
+                        // Get the existing timetables array from local storage or create a new one
+                        let timetables = JSON.parse(localStorage.getItem('timetables')) || [];
+                        // Add the new timetable data to the array
+                        timetables.push(timetableData);
+                        // Save the updated timetables array back to local storage
+                        localStorage.setItem('timetables', JSON.stringify(timetables));
+    
+                        // Redirect to view timetable page
+                        window.location.href = 'view-timetable.html';
+                    } else {
+                        // Display error message
+                        alert('Please select more study hours to save the plan.');
+                    }
+                }
+            });
+        });
+        
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advisor</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  /* Basic styling */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #2146ce;
+  }
+  .container {
+    background-image: url("https://www.hyatts.com/eCom/images/4/482436.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    text-align: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  .backbutton {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  /* Style for the back button */
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #b0c7e0;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Students Information</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>Study Hours</th>
+        <th>Work Hours</th>
+        <th>Class Hours</th>
+        <th>Financial Aid</th> <!-- Added th for Financial Aid -->
+      </tr>
+    </thead>
+    <tbody id="userTableBody">
+      <!-- User information will be displayed here dynamically -->
+    </tbody>
+  </table>
+  
+</div>
+<!-- Backbutton -->
+<div class="backbutton">
+  <button id="backbutton" class="btn btn-primary">Back</button>
+</div>
+<script>
+  // Function to display user information
+  function displayUserInfo() {
+    var users = JSON.parse(localStorage.getItem('users'));
+    var timetables = JSON.parse(localStorage.getItem('timetables'));
+    var userStatus = JSON.parse(localStorage.getItem('userStatus')); // Retrieve userStatus array
+    console.log('Users:', users);
+    console.log('Timetables:', timetables);
+    console.log('User Status:', userStatus); // Log user status array
+    var tableBody = document.getElementById('userTableBody');
+    tableBody.innerHTML = '';
+
+    users.forEach(user => {
+      var timetable = timetables.find(item => item.userId == user.userId);
+      console.log('Timetables:', timetable);
+      var tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${user.firstName} ${user.lastName}</td>
+        <td>${timetable ? timetable.studyTotal : 'N/A'} hours</td>
+        <td>${timetable ? timetable.workTotal : 'N/A'} hours</td>
+        <td>${timetable ? timetable.classTotal : 'N/A'} hours</td>
+        <td>${getUserStatus(user.userId, userStatus)}</td> <!-- Display status -->
+      `;
+      tableBody.appendChild(tr);
+    });
+    // Logout button event listener
+    document.getElementById('backbutton').addEventListener('click', function() {
+                // Redirect to index.html using JavaScript
+                window.location.href = 'index.html';
+            });
+  }
+
+  // Function to get user status based on userId
+  function getUserStatus(userId, userStatus) {
+    var status = 'N/A';
+    if (userStatus && userStatus.length > 0) {
+      var userDataStatus = userStatus.find(item => item.userId === userId);
+      status = userDataStatus ? userDataStatus.status : 'N/A';
+    }
+    return status;
+  }
+
+  // Display user information on page load
+  window.onload = function() {
+    displayUserInfo();
+  };
+</script>
+
+</body>
+</html>
